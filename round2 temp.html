@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>REVERSE ENGINEERING Challenge</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .output-box {
+            background-color: #2d2d2d;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .attempt-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input {
+            padding: 8px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .history {
+            margin-top: 20px;
+        }
+        #gameOverModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .modal-button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>REVERSE ENGINEERING</h1>
+    <p>Find the input that generates the target output. Your wrong input becomes the next target!</p>
+   
+    <div class="code-block">
+function transformNumber(input) {
+    // Convert to string for digit manipulation
+    let digits = input.toString().split('').map(Number);
+    let result = 0;
+   
+    // Apply complex transformations
+    for (let i = 0; i < digits.length; i++) {
+        let digit = digits[i];
+        // Binary weight multiplication
+        result += digit * Math.pow(2, i);
+        // Position-based transformation
+        result += (digit * (i + 1)) % 10;
+    }
+   
+    // Additional transformations
+    result = result * 17;
+    result = result + Math.pow(result % 10, 3);
+    result = result % 1000;
+   
+    // Ensure 3 digits
+    if (result < 100) {
+        result += 100;
+    }
+   
+    return result;
+}</div>
+
+    <div class="output-box">
+        <h3>Target Output: <span id="targetOutput">456</span></h3>
+        <p>Attempts Remaining: <span id="attempts">6</span></p>
+    </div>
+
+    <div class="attempt-box">
+        <input type="number" id="userInput" placeholder="Enter your guess">
+        <button onclick="checkAnswer()">Submit</button>
+    </div>
+
+    <div class="history">
+        <h3>Previous Attempts:</h3>
+        <ul id="historyList"></ul>
+    </div>
+
+    <div id="overlay"></div>
+    <div id="gameOverModal">
+        <h2>GAME OVER!</h2>
+        <p>You've used all 6 attempts!</p>
+        <p>The correct input was: <span id="correctAnswer"></span></p>
+        <button class="modal-button" onclick="startNewGame()">Start New Game</button>
+    </div>
+
+    <script>
+        let attemptsLeft = 6;
+        let currentTarget = 456;
+        let correctInput = 123; // The input that generates 456
+
+        function transformNumber(input) {
+            let digits = input.toString().split('').map(Number);
+            let result = 0;
+           
+            for (let i = 0; i < digits.length; i++) {
+                let digit = digits[i];
+                result += digit * Math.pow(2, i);
+                result += (digit * (i + 1)) % 10;
+            }
+           
+            result = result * 17;
+            result = result + Math.pow(result % 10, 3);
+            result = result % 1000;
+           
+            if (result < 100) {
+                result += 100;
+            }
+           
+            return result;
+        }
+
+        function showGameOver() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('gameOverModal').style.display = 'block';
+            document.getElementById('correctAnswer').textContent = correctInput;
+        }
+
+        function startNewGame() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('gameOverModal').style.display = 'none';
+            resetGame();
+        }
+
+        function checkAnswer() {
+            if (attemptsLeft <= 0) return;
+           
+            const input = parseInt(document.getElementById('userInput').value);
+            if (isNaN(input)) return;
+           
+            const result = transformNumber(input);
+            attemptsLeft--;
+           
+            // Add to history
+            const historyItem = document.createElement('li');
+            historyItem.textContent = `Target: ${currentTarget} | Your Input: ${input} | Output: ${result}`;
+            document.getElementById('historyList').insertBefore(historyItem, document.getElementById('historyList').firstChild);
+           
+            // Update attempts display
+            document.getElementById('attempts').textContent = attemptsLeft;
+           
+            if (result === currentTarget) {
+                alert('Congratulations! You found the correct input!');
+                resetGame();
+            } else {
+                // Make the wrong input the new target
+                currentTarget = input;
+                document.getElementById('targetOutput').textContent = currentTarget;
+               
+                if (attemptsLeft === 0) {
+                    showGameOver();
+                }
+            }
+           
+            document.getElementById('userInput').value = '';
+        }
+
+        function resetGame() {
+            attemptsLeft = 6;
+            currentTarget = 456; // Reset to original target
+            document.getElementById('attempts').textContent = attemptsLeft;
+            document.getElementById('targetOutput').textContent = currentTarget;
+            document.getElementById('historyList').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

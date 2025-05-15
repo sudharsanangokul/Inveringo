@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>REVERSE ENGINEERING Challenge</title>
+    <style>
+        /* Styling for game elements */
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .output-box {
+            background-color: #2d2d2d;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .attempt-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input {
+            padding: 8px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .history {
+            margin-top: 20px;
+        }
+        #gameOverModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .modal-button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>REVERSE ENGINEERING</h1>
+    <p>Find the input that generates the target output. Your wrong input becomes the next target!</p>
+   
+    <div class="code-block">
+        <pre>
+function transformNumber(input) {
+    1. Start
+    2. Input N (size of array)
+    3. Initialize a standard array of numbers (predefined) 
+	[10,55,20,2,8,7,15,45,32,5,91,13,23,18,60,29,37,41,53,67,83,97,101,103,107,109,113]
+    4. Select the first N numbers from the standard array
+    5. Initialize an empty stack and queue
+    6. Push elements into the stack and queue from the selected array
+    7. Perform operations based on X = 5 (odd):
+        a. Shift elements from the queue, double them, and sort the queue in ascending order
+    8. Calculate the number of prime numbers in the final stack and queue
+    9. Display the number of prime numbers
+    10. End
+        </pre>
+    </div>
+
+    <div class="output-box">
+        <h3>Target Output: <span id="targetOutput">3</span></h3>
+        <p>Attempts Remaining: <span id="attempts">2</span></p>
+    </div>
+
+    <div class="attempt-box">
+        <input type="number" id="userInput" placeholder="Enter your guess">
+        <button onclick="checkAnswer()">Submit</button>
+    </div>
+
+    <div class="history">
+        <h3>Previous Attempts:</h3>
+        <ul id="historyList"></ul>
+    </div>
+
+    <div id="overlay"></div>
+    <div id="gameOverModal">
+        <h2>GAME OVER!</h2>
+        <p>You've used all 2 attempts!</p>
+    </div>
+
+    <script>
+        // Function to check if a number is prime
+        function isPrime(num) {
+            if (num <= 1) return false;
+            for (let i = 2; i <= Math.sqrt(num); i++) {
+                if (num % i === 0) return false;
+            }
+            return true;
+        }
+
+        // Function to process the input and perform the operations
+        function processData(N) {
+            // Predefined standard array
+            const standardArray = [10, 55, 20, 2, 8, 7, 15, 45, 32, 5, 91, 13, 23, 18, 60];
+
+            // Ensure N does not exceed the size of the standard array
+            if (N > standardArray.length) {
+                console.log("N exceeds the length of the predefined array. Please enter a smaller value.");
+                return;
+            }
+
+            // Select the first N numbers from the standard array
+            let numbers = standardArray.slice(0, N);
+
+            // Initialize the stack and queue
+            let stack = [];
+            let queue = [];
+
+            // Push all elements into the stack and queue
+            for (let i = 0; i < numbers.length; i++) {
+                stack.push(numbers[i]);
+                queue.push(numbers[i]);
+            }
+
+            // Perform queue operation (shift, double, sort) as X = 5 is odd
+            let modifiedQueue = [];
+            while (queue.length > 0) {
+                let num = queue.shift();
+                num *= 2;  // Double the number
+                modifiedQueue.push(num);
+            }
+            modifiedQueue.sort((a, b) => a - b);  // Sort the queue in ascending order
+            queue = modifiedQueue;  // Update queue with sorted values
+
+            // Combine the stack and queue into one array
+            let allNumbers = [...stack, ...queue];
+
+            // Count the number of prime numbers
+            let primeCount = 0;
+            for (let i = 0; i < allNumbers.length; i++) {
+                if (isPrime(allNumbers[i])) {
+                    primeCount++;
+                }
+            }
+
+            return primeCount; // Prime count will be used as the target number
+        }
+
+        // Game logic to check answer
+        let attemptsLeft = 2;
+        let currentTarget = 3;  // The initial target output
+
+        function checkAnswer() {
+            if (attemptsLeft <= 0) return;
+
+            const input = parseInt(document.getElementById('userInput').value);
+            if (isNaN(input)) return;
+
+            const result = processData(input);
+            attemptsLeft--;
+
+            // Add to history
+            const historyItem = document.createElement('li');
+            historyItem.textContent = `Your Input: ${input} | Output: ${result}`;
+            document.getElementById('historyList').insertBefore(historyItem, document.getElementById('historyList').firstChild);
+
+            // Update attempts display
+            document.getElementById('attempts').textContent = attemptsLeft;
+
+            if (result === currentTarget) {
+                alert('Congratulations! You found the correct input!');
+                resetGame();
+            } else {
+                // Make the wrong input the new target
+                currentTarget = input;
+                document.getElementById('targetOutput').textContent = currentTarget;
+
+                if (attemptsLeft === 0) {
+                    showGameOver();
+                }
+            }
+
+            document.getElementById('userInput').value = '';
+        }
+
+        function showGameOver() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('gameOverModal').style.display = 'block';
+            document.getElementById('correctAnswer').textContent = currentTarget;
+        }
+
+        function startNewGame() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('gameOverModal').style.display = 'none';
+            attemptsLeft = 6;
+            currentTarget = 456;
+            document.getElementById('attempts').textContent = attemptsLeft;
+            document.getElementById('targetOutput').textContent = currentTarget;
+            document.getElementById('historyList').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

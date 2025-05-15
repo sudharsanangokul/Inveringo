@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pseudocode Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+        }
+        .letter-section {
+            font-size: 160px;
+            font-weight: bold;
+            color: #333;
+        }
+        .image-box {
+            width: 600px;
+            height: 400px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #ccc;
+        }
+        .image-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .pseudo-code {
+            font-size: 48px;
+            font-weight: bold;
+            color: #555;
+        }
+        .answer-section {
+            margin-top: 20px;
+        }
+        .input-box {
+            font-size: 24px;
+            padding: 10px;
+        }
+        .submit-btn {
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .correct { color: green; }
+        .incorrect { color: red; }
+        .warning { color: orange; }
+        .disabled { cursor: not-allowed; opacity: 0.6; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Letters Section -->
+        <div class="letter-section">
+            <span id="letter1">A</span>
+        </div>
+
+        <!-- First Question -->
+        <div id="question1">
+            <div class="image-box">
+                <img src="Pseudo code 1.png" alt="Pseudocode Diagram 1">
+            </div>
+            <div class="pseudo-code">Enter the answer</div>
+            <div class="answer-section">
+                <input type="text" id="answer-input1" class="input-box" placeholder="Enter your answer">
+                <button id="submit-btn1" class="submit-btn">Submit</button>
+                <div id="result-message1" class="result"></div>
+            </div>
+        </div>
+		
+		<div class="letter-section">
+            <span id="letter1">S</span>
+        </div>
+
+        <!-- Second Question (Initially Hidden) -->
+        <div id="question2" class="hidden">
+            <div class="image-box">
+                <img src="Pseudo code 2.png" alt="Pseudocode Diagram 2">
+            </div>
+            <div class="pseudo-code">Enter the answer</div>
+            <div class="answer-section">
+                <input type="text" id="answer-input2" class="input-box" placeholder="Enter your answer">
+                <button id="submit-btn2" class="submit-btn">Submit</button>
+                <div id="result-message2" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let attempts1 = 0, attempts2 = 0;
+        const maxAttempts = 2;
+
+        const correctAnswer1 = "D";
+        const correctAnswer2 = "S"; // Modify as per requirement
+
+        document.getElementById("submit-btn1").addEventListener("click", function () {
+            const userAnswer = document.getElementById("answer-input1").value.trim();
+            const resultMessage = document.getElementById("result-message1");
+
+            if (userAnswer === "") {
+                resultMessage.textContent = "Please enter an answer!";
+                resultMessage.className = "result warning";
+                return;
+            }
+
+            attempts1++;
+
+            if (userAnswer.toLowerCase() === correctAnswer1.toLowerCase()) {
+                resultMessage.textContent = "Correct! Well done!";
+                resultMessage.className = "result correct";
+                document.getElementById("answer-input1").disabled = true;
+                document.getElementById("submit-btn1").disabled = true;
+                
+                // Show second question
+                document.getElementById("question2").classList.remove("hidden");
+            } else {
+                if (attempts1 < maxAttempts) {
+                    resultMessage.textContent = `Incorrect! You have ${maxAttempts - attempts1} attempt(s) left.`;
+                    resultMessage.className = "result incorrect";
+                } else {
+                    resultMessage.textContent = "Incorrect! No more attempts left.";
+                    resultMessage.className = "result incorrect";
+                    document.getElementById("answer-input1").disabled = true;
+                    document.getElementById("submit-btn1").disabled = true;
+
+                    // Show second question even if failed
+                    document.getElementById("question2").classList.remove("hidden");
+                }
+            }
+        });
+
+        document.getElementById("submit-btn2").addEventListener("click", function () {
+            const userAnswer = document.getElementById("answer-input2").value.trim();
+            const resultMessage = document.getElementById("result-message2");
+
+            if (userAnswer === "") {
+                resultMessage.textContent = "Please enter an answer!";
+                resultMessage.className = "result warning";
+                return;
+            }
+
+            attempts2++;
+
+            if (userAnswer.toLowerCase() === correctAnswer2.toLowerCase()) {
+                resultMessage.textContent = "Correct! Well done!";
+                resultMessage.className = "result correct";
+                document.getElementById("answer-input2").disabled = true;
+                document.getElementById("submit-btn2").disabled = true;
+            } else {
+                if (attempts2 < maxAttempts) {
+                    resultMessage.textContent = `Incorrect! You have ${maxAttempts - attempts2} attempt(s) left.`;
+                    resultMessage.className = "result incorrect";
+                } else {
+                    resultMessage.textContent = "Incorrect! No more attempts left.";
+                    resultMessage.className = "result incorrect";
+                    document.getElementById("answer-input2").disabled = true;
+                    document.getElementById("submit-btn2").disabled = true;
+                }
+            }
+        });
+
+        // Refresh when navigating back from bingo.html
+        window.addEventListener("pageshow", function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>

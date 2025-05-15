@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Questions Section -->
+        <div class="questions-section">
+            <h2>Question</h2>
+            <div id="question-box">
+                <p id="current-question">1. What is 2 + 2?</p>
+            </div>
+            <input type="text" id="answer-input" placeholder="Enter your answer" />
+            <div class="buttons">
+                <button id="back-button">Back</button>
+                <button id="next-button">Next</button>
+            </div>
+            <button id="submit-button">Submit</button>
+           
+        </div>
+
+        <!-- Bingo Board Section -->
+        <div class="bingo-section">
+            <h2>Bingo Board</h2>
+            <div class="bingo-grid" id="bingo-grid">
+                <!-- Cells will be dynamically populated -->
+                <div class="cell" id="cell-1">1</div>
+                <div class="cell" id="cell-2">2</div>
+                <div class="cell" id="cell-3">3</div>
+                <div class="cell" id="cell-4">4</div>
+                <div class="cell" id="cell-5">5</div>
+                <div class="cell" id="cell-6">6</div>
+                <div class="cell" id="cell-7">7</div>
+                <div class="cell" id="cell-8">8</div>
+                <div class="cell" id="cell-9">9</div>
+            </div>
+
+            <!-- Words Display -->
+            <div class="words-display">
+                <h3>Generated Letters</h3>
+                <div id="generated-words">
+                    <p id="no-words">No Letter generated yet.</p>
+                </div>
+            </div>
+
+            <!-- Notification Section -->
+            <div id="notification" class="hidden">
+                <p>You have generated a new Letter!</p>
+                <br />
+                <p>Proceed to the next step?</p>
+                <button id="proceed-button">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include external script -->
+    <script src="script.js"></script>
+</body>
+</html>

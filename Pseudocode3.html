@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pseudocode Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+        }
+        .image-box {
+            width: 600px;
+            height: 400px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #ccc;
+        }
+        .image-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .pseudo-code {
+            font-size: 48px;
+            font-weight: bold;
+            color: #555;
+        }
+        .answer-section {
+            margin-top: 20px;
+        }
+        .input-box {
+            font-size: 24px;
+            padding: 10px;
+        }
+        .submit-btn {
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .correct { color: green; }
+        .incorrect { color: red; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- First Question -->
+		<div class="letter-section">
+            <span id="letter1">A</span>
+        </div>
+		
+        <div id="question1">
+            <div class="image-box">
+                <img src="Pseudo code 1.png" alt="Pseudocode Diagram 1">
+            </div>
+            <div class="pseudo-code">Enter the answer</div>
+            <div class="answer-section">
+                <input type="text" id="answer-input1" class="input-box" placeholder="Enter your answer">
+                <button id="submit-btn1" class="submit-btn">Submit</button>
+                <div id="result-message1" class="result"></div>
+            </div>
+        </div>
+
+		
+        <!-- Second Question (Initially Hidden) -->
+		<div class="letter-section">
+            <span id="letter1">S</span>
+        </div>
+        <div id="question2" class="hidden">
+            <div class="image-box">
+                <img src="Pseudo code 2.png" alt="Pseudocode Diagram 2">
+            </div>
+            <div class="pseudo-code">Enter the answer</div>
+            <div class="answer-section">
+                <input type="text" id="answer-input2" class="input-box" placeholder="Enter your answer">
+                <button id="submit-btn2" class="submit-btn">Submit</button>
+                <div id="result-message2" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Third Question (Initially Hidden) -->
+		<div class="letter-section">
+            <span id="letter1">K</span>
+        </div>
+        <div id="question3" class="hidden">
+            <div class="image-box">
+                <img src="Pseudo code 3.png" alt="Pseudocode Diagram 3">
+            </div>
+            <div class="pseudo-code">Enter the answer</div>
+            <div class="answer-section">
+                <input type="text" id="answer-input3" class="input-box" placeholder="Enter your answer">
+                <button id="submit-btn3" class="submit-btn">Submit</button>
+                <div id="result-message3" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let attempts1 = 0, attempts2 = 0, attempts3 = 0;
+        const maxAttempts = 2;
+        
+        const correctAnswer1 = "D";
+        const correctAnswer2 = "S";
+        const correctAnswer3 = "A";
+
+        function handleAnswer(questionNum, correctAnswer, nextQuestion) {
+            let attempts = eval(`attempts${questionNum}`);
+            const userAnswer = document.getElementById(`answer-input${questionNum}`).value.trim();
+            const resultMessage = document.getElementById(`result-message${questionNum}`);
+
+            if (userAnswer === "") {
+                resultMessage.textContent = "Please enter an answer!";
+                resultMessage.className = "result warning";
+                return;
+            }
+
+            attempts++;
+            eval(`attempts${questionNum} = attempts`);
+
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                resultMessage.textContent = "Correct! Well done!";
+                resultMessage.className = "result correct";
+                document.getElementById(`answer-input${questionNum}`).disabled = true;
+                document.getElementById(`submit-btn${questionNum}`).disabled = true;
+                
+                if (nextQuestion) {
+                    document.getElementById(nextQuestion).classList.remove("hidden");
+                }
+            } else {
+                if (attempts < maxAttempts) {
+                    resultMessage.textContent = `Incorrect! You have ${maxAttempts - attempts} attempt(s) left.`;
+                    resultMessage.className = "result incorrect";
+                } else {
+                    resultMessage.textContent = "Incorrect! No more attempts left.";
+                    resultMessage.className = "result incorrect";
+                    document.getElementById(`answer-input${questionNum}`).disabled = true;
+                    document.getElementById(`submit-btn${questionNum}`).disabled = true;
+
+                    if (nextQuestion) {
+                        document.getElementById(nextQuestion).classList.remove("hidden");
+                    }
+                }
+            }
+        }
+
+        document.getElementById("submit-btn1").addEventListener("click", function() {
+            handleAnswer(1, correctAnswer1, "question2");
+        });
+
+        document.getElementById("submit-btn2").addEventListener("click", function() {
+            handleAnswer(2, correctAnswer2, "question3");
+        });
+
+        document.getElementById("submit-btn3").addEventListener("click", function() {
+            handleAnswer(3, correctAnswer3, null);
+        });
+    </script>
+</body>
+</html>

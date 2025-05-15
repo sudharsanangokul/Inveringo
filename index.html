@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Rearrange Game</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .welcome-container {
+            text-align: center;
+        }
+
+        .rearrange-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffecb3;
+            border: 2px solid #ffa000;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: grab;
+            transition: background 0.3s;
+        }
+
+        .cell.dragging {
+            background-color: #81c784;
+            opacity: 0.8;
+            cursor: grabbing;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #42a5f5;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #1e88e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>Welcome to the Inveringo</h1>
+        <p>Rearrange the numbers in the grid by dragging and dropping them!</p>
+        <div class="rearrange-container">
+            <div class="grid" id="grid">
+                <!-- Cells for the 3x3 grid -->
+                <div class="cell" draggable="true">1</div>
+                <div class="cell" draggable="true">2</div>
+                <div class="cell" draggable="true">3</div>
+                <div class="cell" draggable="true">4</div>
+                <div class="cell" draggable="true">5</div>
+                <div class="cell" draggable="true">6</div>
+                <div class="cell" draggable="true">7</div>
+                <div class="cell" draggable="true">8</div>
+                <div class="cell" draggable="true">9</div>
+            </div>
+            <p>Click the button below to confirm your arrangement:</p>
+            <button id="confirm-button">Confirm</button>
+        </div>
+    </div>
+    <script>
+        // Script for enabling drag-and-drop functionality
+        const cells = document.querySelectorAll('.cell');
+        let draggedElement = null;
+
+        // Add event listeners for drag-and-drop
+        cells.forEach(cell => {
+            cell.addEventListener('dragstart', () => {
+                draggedElement = cell;
+                cell.classList.add('dragging');
+            });
+
+            cell.addEventListener('dragend', () => {
+                draggedElement = null;
+                cell.classList.remove('dragging');
+            });
+
+            cell.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Allow drop
+            });
+
+            cell.addEventListener('drop', () => {
+                if (draggedElement && draggedElement !== cell) {
+                    // Swap the contents of the dragged element and the target cell
+                    const temp = cell.textContent;
+                    cell.textContent = draggedElement.textContent;
+                    draggedElement.textContent = temp;
+                }
+            });
+        });
+
+        // Confirm Button Handler
+        document.getElementById('confirm-button').addEventListener('click', () => {
+            const arrangement = Array.from(cells).map(cell => cell.textContent);
+            const confirmation = confirm(
+                `You have arranged the grid in the following order:\n${arrangement.join(', ')}\n\nIs this order correct?`
+            );
+
+            if (confirmation) {
+                localStorage.setItem('bingoGridOrder', JSON.stringify(arrangement));
+                window.location.href = "bingo.html"; // Redirect to bingo.html
+            } else {
+                alert("You can continue rearranging the grid.");
+            }
+        });
+    </script>
+</body>
+</html>
